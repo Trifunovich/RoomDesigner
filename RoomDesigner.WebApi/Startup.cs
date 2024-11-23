@@ -10,13 +10,17 @@ public class Startup
         Configuration = configuration;
     }
 
-    [Obsolete]
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAdB2C"));
         services.AddControllersWithViews();
-        services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+
+        // New way to add Application Insights telemetry using connection string
+        services.AddApplicationInsightsTelemetry(options =>
+        {
+            options.ConnectionString = Configuration["ApplicationInsights:ConnectionString"];
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
