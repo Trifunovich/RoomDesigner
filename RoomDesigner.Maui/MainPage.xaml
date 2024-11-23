@@ -6,5 +6,8 @@
                VerticalOptions="CenterAndExpand" 
                HorizontalOptions="CenterAndExpand" />
         <!-- ARCore and ARKit elements will be added here -->
+
+
+        <Button x:Name="CounterBtn"></Button>
     </StackLayout>
 </ContentPage>

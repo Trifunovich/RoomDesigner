@@ -1,24 +1,38 @@
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
-            .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
-    services.AddControllers();
-    services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
-}
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
 
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+public class Startup
 {
-    if (env.IsDevelopment())
+    public IConfiguration Configuration { get; }
+
+    public Startup(IConfiguration configuration)
     {
-        app.UseDeveloperExceptionPage();
+        Configuration = configuration;
     }
 
-    app.UseHttpsRedirection();
-    app.UseRouting();
-    app.UseAuthentication();
-    app.UseAuthorization();
-    app.UseEndpoints(endpoints =>
+    [Obsolete]
+    public void ConfigureServices(IServiceCollection services)
     {
-        endpoints.MapControllers();
-    });
+        services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAdB2C"));
+        services.AddControllersWithViews();
+        services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
 }
